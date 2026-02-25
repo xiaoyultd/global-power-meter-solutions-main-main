@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,9 +20,16 @@ export default function InquiryForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await base44.entities.Inquiry.create({ ...form, status: "new" });
-    setSubmitting(false);
-    setSubmitted(true);
+    // Send inquiry via email (mailto link)
+    const subject = encodeURIComponent(`Inquiry from ${form.name} - ${form.company}`);
+    const body = encodeURIComponent(
+      `Name: ${form.name}\nEmail: ${form.email}\nCompany: ${form.company}\nCountry: ${form.country}\nPhone: ${form.phone}\nQuantity: ${form.quantity}\n\nMessage:\n${form.message}`
+    );
+    window.location.href = `mailto:summer@yucore.ltd?subject=${subject}&body=${body}`;
+    setTimeout(() => {
+      setSubmitting(false);
+      setSubmitted(true);
+    }, 1000);
   };
 
   if (submitted) {
